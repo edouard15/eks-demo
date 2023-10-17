@@ -1,4 +1,5 @@
 #permission or action for the developers
+/*
 data "aws_iam_policy_document" "developer" {
   statement {
     sid    = "AllowDeveloper"
@@ -18,7 +19,7 @@ data "aws_iam_policy_document" "developer" {
 }
 
 #permission for admin or managers. they can also pass a role in eks see line 32 below
-data "aws_iam_policy_document" "admin" {
+data "aws_iam_policy_document" "master" {
   statement {
     sid       = "AllowAdmin"
     effect    = "Allow"
@@ -43,18 +44,19 @@ data "aws_iam_policy_document" "admin" {
 # assume role for managers
 data "aws_iam_policy_document" "manager_assume_role" {
   statement {
-    sid    = "AllowManagerAssumeRole"
+    sid    = "AllowAccountAssumeRole"
     effect = "Allow"
     actions = [
       "sts:AssumeRole",
     ]
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/manager"]
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/manager", "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/manager1" ]
       #identifiers = ["data.aws_caller_identity.current.account_id]
     }
   }
 }
 
 data "aws_caller_identity" "current" {}
+*/
 

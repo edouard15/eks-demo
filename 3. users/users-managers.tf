@@ -47,20 +47,40 @@ resource "aws_iam_account_password_policy" "strict" {
 }
 
 #7. create iam role for manager 
-resource "aws_iam_role" "managers" {
-  name               = "Manager-eks-Role"
-  assume_role_policy = data.aws_iam_policy_document.manager_assume_role.json
+resource "aws_iam_role" "master" {
+  name               = "Master-eks-Role"
+  assume_role_policy = data.aws_iam_policy_document.master_assume_role.json
 }
 
 #8. create iam policy attachment for manager role
 resource "aws_iam_role_policy_attachment" "admin_policy" {
-  role       = aws_iam_role.managers.name
-  policy_arn = aws_iam_policy.eks_admin.arn
+  role       = aws_iam_role.master.name
+  policy_arn = aws_iam_policy.eks_master.arn
 }
 
-# create iam policy for for the policy attachment
-resource "aws_iam_policy" "eks_admin" {
+#9. create iam policy for for the policy attachment
+resource "aws_iam_policy" "eks_master" {
   name   = "eks-admin"
-  policy = data.aws_iam_policy_document.admin.json
+  policy = data.aws_iam_policy_document.master.json
 }
+
+#10. Create a group calle manager-group
+resource "aws_iam_group" "eks_master" {
+  name = "master-goup"
+}
+#4. attach policy to the group
+resource "aws_iam_group_policy" "master_policy" {
+  name   = "master"
+  group  = aws_iam_group.eks_master.name
+  policy = data.aws_iam_policy_document.master_role.json
+}
+
+
+#5. add user to the group
+resource "aws_iam_group_membership" "master-team" {
+  name  = "master-group-membership"
+  users = [aws_iam_user.eks_user[1].name, aws_iam_user.eks_user[2].name]
+  group = aws_iam_group.eks_master.name
+}
+
 
